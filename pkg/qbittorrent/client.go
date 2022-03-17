@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"crypto/tls"
 
 	"github.com/rs/zerolog/log"
 	"golang.org/x/net/publicsuffix"
@@ -47,7 +48,14 @@ func NewClient(s Settings) *Client {
 	if err != nil {
 		log.Error().Err(err).Msg("new client cookie error")
 	}
+
+	//skip SSL verification
+	tr := &http.Transport{
+        	TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+    	}
+
 	httpClient := &http.Client{
+		Transport: tr,
 		Timeout: timeout,
 		Jar:     jar,
 	}
